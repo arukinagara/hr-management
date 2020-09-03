@@ -1,0 +1,23 @@
+{
+  "name": "with-passport",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@hapi/iron": "6.0.0",
+    "cookie": "0.4.1",
+    "next": "latest",
+    "next-connect": "0.8.1",
+    "passport": "0.4.1",
+    "passport-local": "1.0.0",
+    "pg": "^8.3.2",
+    "pg-hstore": "^2.3.3",
+    "react": "latest",
+    "react-dom": "latest",
+    "sequelize": "^6.3.4",
+    "swr": "0.3.0"
+  },
+  "license": "ISC"
+}
