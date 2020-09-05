@@ -1,29 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import useSWR from 'swr'
 import Layout from '../../components/layout'
-
-const fetcher = async (url) => {
-  const res = await fetch(url)
-  const data = await res.json()
-
-  if (res.status !== 200) {
-    throw new Error(data.message)
-  }
-  return data
-}
+import { useStaff } from '../../lib/hooks'
 
 const Staff = () => {
-  const { query } = useRouter()
-  const { data, error } = useSWR(
-    () => query.id && `/api/staff/${query.id}`,
-    fetcher
-  )
+  const router = useRouter()
+  const s = useStaff(router.query.id)
+
   const [staff, setStaff] = useState()
-  const [disabled, setDisabled] = useState(true)
+  const [submittable, setSubmittable] = useState(false)
+  const [deletable, setDeletable] = useState(false)
+
   useEffect(() => {
-    setStaff(data?.staff[0] || '')
-  }, [data?.staff[0]])
+    setStaff(Array.isArray(s.staff) ? s.staff[0] : '')
+  }, [s.isLoading])
+
+  useEffect(() => {
+    setDeletable(!(router.query.id == 'new'))
+  }, [router.query.id])
 
   if (!staff) {
     return null
@@ -31,31 +27,52 @@ const Staff = () => {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    setDisabled(true)
-    const res = await fetch(`/api/staff/${query.id}`, {method:'PUT', body:JSON.stringify(staff)});
+    setSubmittable(false)
+    const method = !staff.id ? 'POST' : 'PUT'
+    const res = await fetch(`/api/staff/${router.query.id}`, {method: method, body:JSON.stringify(staff)});
+    !staff.id && router.push('/')
   }
 
   function handleChange(e) {
     e.preventDefault()
-    setDisabled(false)
+    setSubmittable(true)
     const target = e.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
     setStaff({ ...staff, [name]: value });
   }
 
+  async function handleDelete(e) {
+    e.preventDefault()
+    if (confirm('削除します')) {
+      const res = await fetch(`/api/staff/${router.query.id}`, {method: 'DELETE', body:JSON.stringify(staff)});
+      router.push('/')
+    }
+  }
+
   return (
     <Layout>
+      <div>
+        <ul>
+          <li>個人</li>
+          <Link href="/staff/[id]/relatives" as={`/staff/${staff.id}/relatives`}>
+            <li>家族</li>
+          </Link>
+          <li>資格</li>
+          <li>入社前履歴</li>
+          <li>入社後職務履歴</li>
+        </ul>
+      </div>
       <div className="detail">
         <form onSubmit={handleSubmit}>
           <ul>
             <li>
               <label><span>社員ID</span></label>
-              <input type="text" name="staffId" value={staff.staffId} onChange={handleChange} required />
+              <input type="text" name="staffId" value={staff.staffId || ''} onChange={handleChange} required />
             </li>
             <li>
               <label><span>氏名</span></label>
-              <input type="text" name="fullName" value={staff.fullName} onChange={handleChange} required />
+              <input type="text" name="fullName" value={staff.fullName || ''} onChange={handleChange} required />
             </li>
             <li>
               <label><span>フリガナ</span></label>
@@ -235,7 +252,7 @@ const Staff = () => {
             </li>
             <li>
               <label><span>同居区分</span></label>
-              <input type="text" name="emergencyIsLiveWith" value={staff.emergencyIsLiveWith || ''} onChange={handleChange} />
+              <input type="checkbox" name="emergencyIsLiveWith" value={staff.emergencyIsLiveWith || ''} onChange={handleChange} />
             </li>
             <li>
               <label><span>郵便番号</span></label>
@@ -267,19 +284,24 @@ const Staff = () => {
             </li>
             <li>
               <label><span>退職日</span></label>
-              <input type="text" name="leaveDate" value={staff.leaveDate || ''} onChange={handleChange} />
+              <input type="date" name="leaveDate" value={staff.leaveDate || ''} onChange={handleChange} />
             </li>
             <li>
               <label><span>退職理由</span></label>
-              <input type="text" name="leaveReason" value={staff.leaveDate || ''} onChange={handleChange} />
+              <input type="text" name="leaveReason" value={staff.leaveReason || ''} onChange={handleChange} />
             </li>
             <li>
               <label><span>備考</span></label>
               <input type="text" name="notes" value={staff.notes || ''} onChange={handleChange} />
             </li>
             <li>
-              <div className="submit">
-                <button type="submit" disabled={disabled}>更新</button>
+              <div>
+                <button type="submit" disabled={!submittable}>更新</button>
+              </div>
+            </li>
+            <li>
+              <div>
+                <button type="button" disabled={!deletable} onClick={handleDelete}>削除</button>
               </div>
             </li>
           </ul>
@@ -287,48 +309,6 @@ const Staff = () => {
       </div>
 
       <style jsx>{`
-        form,
-        ul {
-          width: 100%;
-        }
-        li {
-          display: flex;
-          align-items: center;
-        }
-        label {
-          flex: 1.5;
-          padding: 16px;
-          text-align: right;
-        }
-        label > span {
-          font-weight: 600;
-        }
-        input {
-          flex: 4;
-          padding: 8px;
-          margin: 0.7rem 0;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-        }
-        .submit {
-          display: flex;
-          justify-content: flex-end;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .submit > a {
-          text-decoration: none;
-        }
-        .submit > button {
-          padding: 0.5rem 1rem;
-          cursor: pointer;
-          background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-        }
-        .submit > button:hover {
-          border-color: #888;
-        }
       `}</style>
     </Layout>
   )
