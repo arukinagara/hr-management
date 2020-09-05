@@ -63,7 +63,7 @@ const Relative = () => {
             </li>
             <li>
               <label><span>同居区分</span></label>
-              <input type="text" name="isLiveWith" value={relative.isLiveWith || ''} onChange={handleChange} />
+              <input type="checkbox" name="isLiveWith" value={relative.isLiveWith || ''} onChange={handleChange} />
             </li>
             <li>
               <label><span>郵便番号</span></label>
