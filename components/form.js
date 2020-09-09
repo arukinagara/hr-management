@@ -3,16 +3,16 @@ import Link from 'next/link'
 const Form = ({ isLogin, errorMessage, onSubmit }) => (
   <form onSubmit={onSubmit}>
     <label>
-      <span>Username</span>
+      <span>ユーザ名</span>
       <input type="text" name="username" required />
     </label>
     <label>
-      <span>Password</span>
+      <span>パスワード</span>
       <input type="password" name="password" required />
     </label>
     {!isLogin && (
       <label>
-        <span>Repeat password</span>
+        <span>パスワード(再)</span>
         <input type="password" name="rpassword" required />
       </label>
     )}

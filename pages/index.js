@@ -1,28 +1,21 @@
 import Link from 'next/link'
-import { useUser, useStaff } from '../lib/hooks'
 import Layout from '../components/layout'
-import useSWR from 'swr'
+import { useUser, useStaff } from '../lib/hooks'
 
-// 下のexport defaultで使っている
 const Home = () => {
   const user = useUser()
-  // indexから認証が必要にするなら以下
-  // const user = useUser({ redirectTo: '/login' })
-
   const staff = useStaff()
-  //const { data, error } = useSWR('/api/staff', fetcher)
 
   if (!staff) {
     return null
   }
 
-  // const tbody = !data?.staff ? null : data?.staff.map(staff =>
   const tbody = !staff.staff ? null : staff.staff.map(s =>
     <Link href="/staff/[id]" as={`/staff/${s.id}`} key={s.id}>
-      <tr>
-        <td>{s.staffId}</td>
-        <td>{s.fullName}</td>
-        <td>{s.furigana}</td>
+      <tr className="hover:bg-gray-200">
+        <td className="p-2">{s.staffId}</td>
+        <td className="p-2">{s.fullName}</td>
+        <td className="p-2">{s.furigana}</td>
       </tr>
     </Link>
   )
@@ -30,17 +23,20 @@ const Home = () => {
   return (
     <Layout>
       <Link href="/staff/[id]" as="/staff/new">
-        <a>新規作成</a>
+        <div className="mb-4 flex justify-end">
+          <button type="link" disabled={!user.data}
+                  className={user.data ? "btn" : "btn-disabled"}>新規作成</button>
+        </div>
       </Link>
-      <table>
+      <table className="container table-fixed">
         <thead>
           <tr>
-            <th>社員ID</th>
-            <th>氏名</th>
-            <th>フリガナ</th>
+            <th className="text-left p-2 w-1/3">社員ID</th>
+            <th className="text-left p-2 w-1/3">氏名</th>
+            <th className="text-left p-2 w-1/3">フリガナ</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y">
           {tbody}
         </tbody>
       </table>

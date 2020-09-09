@@ -5,61 +5,27 @@ const Header = () => {
   const user = useUser()
 
   return (
-    <header>
-      <nav>
-        <ul>
-          <li>
+    <header className="text-white bg-gray-900">
+      <nav className="max-w-2xl mx-auto my-0 px-5 py-2">
+        <ul className="flex justify-end list-none ml-0 pl-0">
+          <li className="mr-4 first:ml-auto">
             <Link href="/">
-              <a>Home</a>
+              <a>従業員一覧</a>
             </Link>
           </li>
           {user.data ? (
-            <>
-              <li>
-                <Link href="/profile">
-                  <a>Profile</a>
-                </Link>
-              </li>
-              <li>
-                <a href="/api/logout">Logout</a>
-              </li>
-            </>
+            <li className="mr-0">
+              <a href="/api/logout" className="text-white no-underline">ログアウト</a>
+            </li>
           ) : (
-            <li>
+            <li className="mr-0">
               <Link href="/login">
-                <a>Login</a>
+                <a>ログイン</a>
               </Link>
             </li>
           )}
         </ul>
       </nav>
-      <style jsx>{`
-        nav {
-          max-width: 42rem;
-          margin: 0 auto;
-          padding: 0.2rem 1.25rem;
-        }
-        ul {
-          display: flex;
-          list-style: none;
-          margin-left: 0;
-          padding-left: 0;
-        }
-        li {
-          margin-right: 1rem;
-        }
-        li:first-child {
-          margin-left: auto;
-        }
-        a {
-          color: #fff;
-          text-decoration: none;
-        }
-        header {
-          color: #fff;
-          background-color: #333;
-        }
-      `}</style>
     </header>
   )
 }

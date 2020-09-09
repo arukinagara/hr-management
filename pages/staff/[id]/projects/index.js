@@ -3,41 +3,37 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Layout from '../../../../components/layout'
 import Navigation from '../../../../components/navigation'
-import { useStaff, useRelative } from '../../../../lib/hooks'
+import { useStaff, useProject } from '../../../../lib/hooks'
 
-const Relatives = () => {
+const Projects = () => {
   const router = useRouter()
   const s = useStaff(router.query.id)
   const [staff, setStaff] = useState()
   useEffect(() => {
     setStaff(Array.isArray(s.staff) ? s.staff[0] : '')
   }, [s.isLoading])
-  const relatives = useRelative(staff && {staffId: staff.staffId} || '')
+  const projects = useProject(staff && {staffId: staff.staffId} || '')
 
   if (!staff) {
     return null
   }
 
-  const tbody = !relatives.relatives ? null : relatives.relatives.map(relative =>
-    <Link href="/staff/[id]/relatives/[id_relative]" as={`/staff/${staff.id}/relatives/${relative.id}`} key={relative.id}>
+  const tbody = !projects.projects ? null : projects.projects.map(project =>
+    <Link href="/staff/[id]/projects/[id_project]"
+          as={`/staff/${staff.id}/projects/${project.id}`} key={project.id}>
       <tr className="hover:bg-gray-200">
-        <td className="p-2">{relative.dependantReason}</td>
-        <td className="p-2">{relative.fullName}</td>
-        <td className="p-2">{relative.furigana}</td>
-        <td className="p-2">{relative.relation}</td>
-        <td className="p-2">{String(relative.isLiveWith)}</td>
-        <td className="p-2">{relative.postalCode}</td>
-        <td className="p-2">{relative.address1}</td>
-        <td className="p-2">{relative.address2}</td>
-        <td className="p-2">{relative.address3}</td>
-        <td className="p-2">{relative.phoneNumber}</td>
+        <td className="p-2">{project.startDate}</td>
+        <td className="p-2">{project.endDate}</td>
+        <td className="p-2">{project.name}</td>
+        <td className="p-2">{project.description}</td>
+        <td className="p-2">{project.notes}</td>
       </tr>
     </Link>
   )
 
   return (
     <Layout>
-      <Navigation id={staff.id} page="relatives" />
+      <Navigation id={staff.id} page="projects" />
 
       <div className="flex items-center mb-2">
         <div className="w-1/3">
@@ -61,7 +57,7 @@ const Relatives = () => {
         </div>
       </div>
 
-      <Link href="/staff/[id]/relatives/[id_relative]" as={`/staff/${staff.id}/relatives/new`}>
+      <Link href="/staff/[id]/projects/[id_project]" as={`/staff/${staff.id}/projects/new`}>
         <div className="mb-4 flex justify-end">
           <button type="link" className="btn">新規作成</button>
         </div>
@@ -70,16 +66,11 @@ const Relatives = () => {
       <table className="block overflow-x-scroll whitespace-no-wrap">
         <thead>
           <tr>
-            <th className="text-left p-2">扶養事由</th>
-            <th className="text-left p-2">氏名</th>
-            <th className="text-left p-2">フリガナ</th>
-            <th className="text-left p-2">続柄</th>
-            <th className="text-left p-2">同居区分</th>
-            <th className="text-left p-2">郵便番号</th>
-            <th className="text-left p-2">住所1</th>
-            <th className="text-left p-2">住所2</th>
-            <th className="text-left p-2">住所3</th>
-            <th className="text-left p-2">電話番号</th>
+            <th className="text-left p-2 w-1/4">期間(自)</th>
+            <th className="text-left p-2 w-1/4">期間(至)</th>
+            <th className="text-left p-2 w-1/4">従事件名</th>
+            <th className="text-left p-2 w-1/4">業務内容</th>
+            <th className="text-left p-2">特記事項</th>
           </tr>
         </thead>
         <tbody className="divide-y">
@@ -90,4 +81,4 @@ const Relatives = () => {
   )
 }
 
-export default Relatives
+export default Projects
